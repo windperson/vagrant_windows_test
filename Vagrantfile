@@ -12,7 +12,7 @@ Vagrant.configure(2) do |config|
 
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://atlas.hashicorp.com/search.
-  config.vm.box = "Win10En"
+  config.vm.box = "Win7En"
   config.vm.network "private_network", type: "dhcp"
 
   # Disable automatic box update checking. If you disable this, then
@@ -66,10 +66,22 @@ Vagrant.configure(2) do |config|
   # Enable provisioning with a shell script. Additional provisioners such as
   # Puppet, Chef, Ansible, Salt, and Docker are also available. Please see the
   # documentation for more information about their specific syntax and use.
+  
   config.vm.provision "shell", inline: <<-SHELL
-    iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1'))
+  $download_url = 'http://packages.chef.io/stable/windows/2008r2/chef-client-12.10.24-1-x64.msi'
+  (New-Object System.Net.WebClient).DownloadFile($download_url, 'C:\\Windows\\Temp\\chef.msi')
+  Start-Process 'msiexec' -ArgumentList '/qb /i C:\\Windows\\Temp\\chef.msi' -NoNewWindow -Wait  
   SHELL
-  config.vm.provision "shell", inline: <<-SHELL
-    choco install -y git
-  SHELL
+  
+  config.vm.provision "chef_solo" do |chef|
+    chef.add_recipe "git"
+  end
+
+  
+  # config.vm.provision "shell", inline: <<-SHELL
+  #   iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1'))
+  # SHELL
+  # config.vm.provision "shell", inline: <<-SHELL
+  #   choco install -y git
+  # SHELL
 end
