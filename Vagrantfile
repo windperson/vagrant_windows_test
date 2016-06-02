@@ -83,5 +83,12 @@ Vagrant.configure(2) do |config|
   config.vm.provision "chef_solo" do |chef|
     chef.add_recipe "git"
   end
-
+  
+$script = <<SCRIPT
+  get-packageprovider -name nuget -ForceBootstrap
+  get-packageprovider -name chocolatey -ForceBootstrap
+SCRIPT
+  
+  config.vm.provision "shell", inline: $script
+  
 end
